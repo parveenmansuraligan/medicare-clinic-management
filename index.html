@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MediCare Clinic Management</title>
+<style>
+:root{--primary:#1769aa;--bg:#f4f7f9;--border:#dce3e8;--text:#263238;--muted:#607d8b}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
+button,input,select,textarea{font:inherit}.hidden{display:none!important}.container{max-width:1180px;margin:auto;padding:20px}
+.card{background:#fff;border:1px solid var(--border);border-radius:8px;padding:20px;margin-bottom:18px;box-shadow:0 1px 4px #0000000d}
+.login{max-width:420px;margin:70px auto}.brand{font-size:28px;font-weight:700;color:var(--primary)}.muted{color:var(--muted)}
+header{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:18px}
+header h1{margin:0;color:var(--primary);font-size:26px}.subtitle{color:var(--muted);margin-top:4px}
+nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+button{border:0;border-radius:5px;background:var(--primary);color:#fff;padding:9px 14px;cursor:pointer}
+button.secondary{background:#607d8b}button.danger{background:#c62828}button.light{background:#e8f1f7;color:#174a70}
+nav button.active{background:#0d4f7d}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.toolbar input{max-width:360px}
+h2{margin-top:0;color:#174a70;font-size:20px}h3{color:#174a70}
+label{display:block;font-weight:600;font-size:14px;margin:10px 0 5px}
+input,select,textarea{width:100%;border:1px solid #bcc9d1;border-radius:5px;padding:9px;background:#fff}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px 14px}.actions{display:flex;gap:8px;margin-top:12px}
+.message{min-height:20px;font-weight:600}.error{color:#c62828}.success{color:#2e7d32}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{border-bottom:1px solid var(--border);padding:9px;text-align:left;vertical-align:top}th{background:#f0f5f8;color:#174a70}
+.small{padding:5px 8px;font-size:12px;margin:2px}.badge{display:inline-block;padding:3px 7px;border-radius:12px;background:#e8f1f7;color:#174a70;font-size:11px}
+.dashboard{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.stat{background:#fff;border:1px solid var(--border);padding:16px;border-radius:8px}.stat b{font-size:24px;color:var(--primary);display:block;margin-top:5px}
+@media(max-width:700px){.container{padding:10px}.grid,.dashboard{grid-template-columns:1fr}.toolbar{align-items:stretch}.toolbar input{max-width:none}header{align-items:flex-start}table{display:block;overflow-x:auto;white-space:nowrap}.login{margin:30px auto}}
+</style>
+</head>
+<body>
+<div class="container">
+<section id="login" class="card login">
+<div class="brand">MediCare</div><p class="subtitle">Clinic Management System</p>
+<form id="loginForm">
+<label>Username</label><input id="username" autocomplete="username">
+<label>Password</label><input id="password" type="password" autocomplete="current-password">
+<button type="submit">Sign in</button><p id="loginMsg" class="message error"></p>
+<p class="muted">Demo account: <b>admin</b> / <b>admin123</b></p>
+</form></section>
+
+<section id="app" class="hidden">
+<header><div><h1>MediCare Clinic Management</h1><div class="subtitle">Patient, doctor and appointment records</div></div><button id="logout" class="secondary">Sign out</button></header>
+<nav>
+<button class="active" data-page="dashboard">Dashboard</button>
+<button data-page="patients">Patients</button>
+<button data-page="doctors">Doctors</button>
+<button data-page="appointments">Appointments</button>
+<button data-page="visits">Visits & Prescriptions</button>
+</nav>
+
+<div id="dashboard" class="page">
+<div class="dashboard">
+<div class="stat">Patients<b id="patientCount">0</b></div>
+<div class="stat">Doctors<b id="doctorCount">0</b></div>
+<div class="stat">Appointments<b id="appointmentCount">0</b></div>
+<div class="stat">Today's Visits<b id="todayCount">0</b></div>
+</div>
+<div class="card"><h2>Clinic Overview</h2><p class="muted">Use the navigation above to manage patient records, doctors, appointments and visit details.</p></div>
+</div>
+
+<div id="patients" class="page hidden">
+<div class="card toolbar"><button id="addPatient">New Patient</button><input id="patientSearch" placeholder="Search patient by ID, name or mobile"></div>
+<div id="patientForm" class="card hidden"><h2 id="patientFormTitle">New Patient</h2>
+<form id="patientFormEl"><input id="pEdit" type="hidden"><div class="grid">
+<div><label>Patient Name *</label><input id="pName" required></div><div><label>Age *</label><input id="pAge" type="number" min="0" max="120" required></div>
+<div><label>Gender *</label><select id="pGender" required><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+<div><label>Mobile Number *</label><input id="pMobile" maxlength="10" required></div>
+<div><label>Email</label><input id="pEmail" type="email"></div><div><label>Blood Group</label><select id="pBlood"><option value="">Select</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select></div>
+<div><label>Date of Registration *</label><input id="pReg" type="date" required></div><div><label>Address</label><input id="pAddress"></div>
+</div><div class="actions"><button>Save Patient</button><button type="button" id="cancelPatient" class="secondary">Cancel</button></div><p id="pMsg" class="message"></p></form></div>
+<div class="card"><h2>Patient Records</h2><table><thead><tr><th>ID</th><th>Name</th><th>Age</th><th>Gender</th><th>Mobile</th><th>Blood Group</th><th>Actions</th></tr></thead><tbody id="patientRows"></tbody></table></div>
+</div>
+
+<div id="doctors" class="page hidden">
+<div class="card toolbar"><button id="addDoctor">New Doctor</button><input id="doctorSearch" placeholder="Search doctor by ID, name or specialization"></div>
+<div id="doctorForm" class="card hidden"><h2>Doctor Details</h2><form id="doctorFormEl"><input id="dEdit" type="hidden"><div class="grid">
+<div><label>Doctor Name *</label><input id="dName" required></div><div><label>Specialization *</label><input id="dSpec" required></div>
+<div><label>Mobile *</label><input id="dMobile" maxlength="10" required></div><div><label>Consultation Fee</label><input id="dFee" type="number" min="0"></div>
+<div><label>Available Days</label><input id="dDays" placeholder="Mon, Tue, Wed"></div><div><label>Status</label><select id="dStatus"><option>Active</option><option>Inactive</option></select></div>
+</div><div class="actions"><button>Save Doctor</button><button type="button" id="cancelDoctor" class="secondary">Cancel</button></div><p id="dMsg" class="message"></p></form></div>
+<div class="card"><h2>Doctor Directory</h2><table><thead><tr><th>ID</th><th>Name</th><th>Specialization</th><th>Mobile</th><th>Fee</th><th>Status</th><th>Actions</th></tr></thead><tbody id="doctorRows"></tbody></table></div>
+</div>
+
+<div id="appointments" class="page hidden">
+<div class="card toolbar"><button id="addAppointment">Book Appointment</button><input id="appointmentSearch" placeholder="Search appointment by patient or doctor"></div>
+<div id="appointmentForm" class="card hidden"><h2>Book Appointment</h2><form id="appointmentFormEl"><input id="aEdit" type="hidden"><div class="grid">
+<div><label>Patient *</label><select id="aPatient" required></select></div><div><label>Doctor *</label><select id="aDoctor" required></select></div>
+<div><label>Appointment Date *</label><input id="aDate" type="date" required></div><div><label>Time *</label><input id="aTime" type="time" required></div>
+<div><label>Reason</label><input id="aReason"></div><div><label>Status</label><select id="aStatus"><option>Scheduled</option><option>Completed</option><option>Cancelled</option></select></div>
+</div><div class="actions"><button>Save Appointment</button><button type="button" id="cancelAppointment" class="secondary">Cancel</button></div><p id="aMsg" class="message"></p></form></div>
+<div class="card"><h2>Appointments</h2><table><thead><tr><th>ID</th><th>Patient</th><th>Doctor</th><th>Date</th><th>Time</th><th>Status</th><th>Actions</th></tr></thead><tbody id="appointmentRows"></tbody></table></div>
+</div>
+
+<div id="visits" class="page hidden">
+<div class="card toolbar"><button id="addVisit">Record Visit</button><input id="visitSearch" placeholder="Search visit by patient"></div>
+<div id="visitForm" class="card hidden"><h2>Visit & Prescription</h2><form id="visitFormEl"><input id="vEdit" type="hidden"><div class="grid">
+<div><label>Patient *</label><select id="vPatient" required></select></div><div><label>Doctor *</label><select id="vDoctor" required></select></div>
+<div><label>Visit Date *</label><input id="vDate" type="date" required></div><div><label>Follow-up Date</label><input id="vFollow"></div>
+</div><label>Symptoms</label><textarea id="vSymptoms" rows="2"></textarea><label>Diagnosis</label><textarea id="vDiagnosis" rows="2"></textarea><label>Prescription / Medicines</label><textarea id="vPrescription" rows="3"></textarea>
+<div class="actions"><button>Save Visit</button><button type="button" id="cancelVisit" class="secondary">Cancel</button></div><p id="vMsg" class="message"></p></form></div>
+<div class="card"><h2>Visit Records</h2><table><thead><tr><th>ID</th><th>Patient</th><th>Doctor</th><th>Date</th><th>Diagnosis</th><th>Prescription</th><th>Actions</th></tr></thead><tbody id="visitRows"></tbody></table></div>
+</div>
+</section>
+</div>
+
+<script>
+const key="medicareClinicDataV1";
+let data=JSON.parse(localStorage.getItem(key)||'{"patients":[],"doctors":[],"appointments":[],"visits":[]}');
+const $=id=>document.getElementById(id);
+const today=new Date().toISOString().slice(0,10);
+function save(){localStorage.setItem(key,JSON.stringify(data));}
+function id(prefix,list){return prefix+String(list.length+1).padStart(3,"0")}
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
+function patientName(x){return data.patients.find(p=>p.id===x)?.name||"Unknown"}
+function doctorName(x){return data.doctors.find(d=>d.id===x)?.name||"Unknown"}
+function refreshDashboard(){
+ $("patientCount").textContent=data.patients.length;$("doctorCount").textContent=data.doctors.length;
+ $("appointmentCount").textContent=data.appointments.length;$("todayCount").textContent=data.appointments.filter(a=>a.date===today).length;
+}
+function openPage(name){
+ document.querySelectorAll(".page").forEach(x=>x.classList.add("hidden"));$(name).classList.remove("hidden");
+ document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===name));renderAll();
+}
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>openPage(b.dataset.page));
+$("loginForm").onsubmit=e=>{e.preventDefault();if($("username").value==="admin"&&$("password").value==="admin123"){$("login").classList.add("hidden");$("app").classList.remove("hidden");openPage("dashboard")}else $("loginMsg").textContent="Invalid username or password."};
+$("logout").onclick=()=>{location.reload()};
+function renderPatients(){
+ let q=$("patientSearch").value.toLowerCase(), list=data.patients.filter(p=>(p.id+" "+p.name+" "+p.mobile).toLowerCase().includes(q));
+ $("patientRows").innerHTML=list.map(p=>`<tr><td>${p.id}</td><td>${esc(p.name)}</td><td>${p.age}</td><td>${p.gender}</td><td>${p.mobile}</td><td>${p.blood||"-"}</td><td><button class="small light" onclick="editPatient('${p.id}')">Edit</button><button class="small danger" onclick="removeItem('patients','${p.id}')">Delete</button></td></tr>`).join("");
+}
+function renderDoctors(){
+ let q=$("doctorSearch").value.toLowerCase(), list=data.doctors.filter(d=>(d.id+" "+d.name+" "+d.spec).toLowerCase().includes(q));
+ $("doctorRows").innerHTML=list.map(d=>`<tr><td>${d.id}</td><td>${esc(d.name)}</td><td>${esc(d.spec)}</td><td>${d.mobile}</td><td>${d.fee||0}</td><td><span class="badge">${d.status}</span></td><td><button class="small light" onclick="editDoctor('${d.id}')">Edit</button><button class="small danger" onclick="removeItem('doctors','${d.id}')">Delete</button></td></tr>`).join("");
+}
+function renderAppointments(){
+ let q=$("appointmentSearch").value.toLowerCase(), list=data.appointments.filter(a=>(patientName(a.patient)+" "+doctorName(a.doctor)+" "+a.id).toLowerCase().includes(q));
+ $("appointmentRows").innerHTML=list.map(a=>`<tr><td>${a.id}</td><td>${esc(patientName(a.patient))}</td><td>${esc(doctorName(a.doctor))}</td><td>${a.date}</td><td>${a.time}</td><td>${a.status}</td><td><button class="small light" onclick="editAppointment('${a.id}')">Edit</button><button class="small danger" onclick="removeItem('appointments','${a.id}')">Delete</button></td></tr>`).join("");
+}
+function renderVisits(){
+ let q=$("visitSearch").value.toLowerCase(), list=data.visits.filter(v=>(patientName(v.patient)+" "+doctorName(v.doctor)+" "+v.id).toLowerCase().includes(q));
+ $("visitRows").innerHTML=list.map(v=>`<tr><td>${v.id}</td><td>${esc(patientName(v.patient))}</td><td>${esc(doctorName(v.doctor))}</td><td>${v.date}</td><td>${esc(v.diagnosis)}</td><td>${esc(v.prescription)}</td><td><button class="small light" onclick="editVisit('${v.id}')">Edit</button><button class="small danger" onclick="removeItem('visits','${v.id}')">Delete</button></td></tr>`).join("");
+}
+function fillSelects(){
+ const patientOpts='<option value="">Select patient</option>'+data.patients.map(p=>`<option value="${p.id}">${p.id} - ${esc(p.name)}</option>`).join("");
+ const doctorOpts='<option value="">Select doctor</option>'+data.doctors.filter(d=>d.status==="Active").map(d=>`<option value="${d.id}">${d.id} - ${esc(d.name)} (${esc(d.spec)})</option>`).join("");
+ ["aPatient","vPatient"].forEach(x=>$(x).innerHTML=patientOpts);["aDoctor","vDoctor"].forEach(x=>$(x).innerHTML=doctorOpts);
+}
+function renderAll(){refreshDashboard();fillSelects();renderPatients();renderDoctors();renderAppointments();renderVisits()}
+$("patientSearch").oninput=renderPatients;$("doctorSearch").oninput=renderDoctors;$("appointmentSearch").oninput=renderAppointments;$("visitSearch").oninput=renderVisits;
+$("addPatient").onclick=()=>{$("patientForm").classList.remove("hidden");$("patientFormEl").reset();$("pEdit").value="";$("pReg").value=today};
+$("cancelPatient").onclick=()=>{$("patientForm").classList.add("hidden")};
+$("patientFormEl").onsubmit=e=>{e.preventDefault();let mobile=$("pMobile").value.trim();if(!/^[0-9]{10}$/.test(mobile))return $("pMsg").textContent="Mobile number must contain exactly 10 digits.";if(data.patients.some(p=>p.mobile===mobile&&p.id!==$("pEdit").value))return $("pMsg").textContent="A patient with this mobile number already exists.";let pid=$("pEdit").value||id("P",data.patients);let r={id:pid,name:$("pName").value.trim(),age:Number($("pAge").value),gender:$("pGender").value,mobile,email:$("pEmail").value.trim(),blood:$("pBlood").value,reg:$("pReg").value,address:$("pAddress").value.trim()};if($("pEdit").value)data.patients=data.patients.map(p=>p.id===pid?r:p);else data.patients.push(r);save();$("patientForm").classList.add("hidden");renderAll()};
+window.editPatient=x=>{let p=data.patients.find(p=>p.id===x);$("patientForm").classList.remove("hidden");$("pEdit").value=p.id;$("pName").value=p.name;$("pAge").value=p.age;$("pGender").value=p.gender;$("pMobile").value=p.mobile;$("pEmail").value=p.email;$("pBlood").value=p.blood;$("pReg").value=p.reg;$("pAddress").value=p.address};
+$("addDoctor").onclick=()=>{$("doctorForm").classList.remove("hidden");$("doctorFormEl").reset();$("dEdit").value=""};$("cancelDoctor").onclick=()=>{$("doctorForm").classList.add("hidden")};
+$("doctorFormEl").onsubmit=e=>{e.preventDefault();let m=$("dMobile").value.trim();if(!/^[0-9]{10}$/.test(m))return $("dMsg").textContent="Mobile number must contain exactly 10 digits.";let did=$("dEdit").value||id("D",data.doctors),r={id:did,name:$("dName").value.trim(),spec:$("dSpec").value.trim(),mobile:m,fee:Number($("dFee").value)||0,days:$("dDays").value,status:$("dStatus").value};if($("dEdit").value)data.doctors=data.doctors.map(d=>d.id===did?r:d);else data.doctors.push(r);save();$("doctorForm").classList.add("hidden");renderAll()};
+window.editDoctor=x=>{let d=data.doctors.find(d=>d.id===x);$("doctorForm").classList.remove("hidden");$("dEdit").value=d.id;$("dName").value=d.name;$("dSpec").value=d.spec;$("dMobile").value=d.mobile;$("dFee").value=d.fee;$("dDays").value=d.days;$("dStatus").value=d.status};
+$("addAppointment").onclick=()=>{$("appointmentForm").classList.remove("hidden");$("appointmentFormEl").reset();$("aEdit").value="";fillSelects()};
+$("cancelAppointment").onclick=()=>{$("appointmentForm").classList.add("hidden")};
+$("appointmentFormEl").onsubmit=e=>{e.preventDefault();let a={id:$("aEdit").value||id("A",data.appointments),patient:$("aPatient").value,doctor:$("aDoctor").value,date:$("aDate").value,time:$("aTime").value,reason:$("aReason").value,status:$("aStatus").value};if(!a.patient||!a.doctor)return $("aMsg").textContent="Patient and doctor are required.";let clash=data.appointments.some(x=>x.id!==a.id&&x.doctor===a.doctor&&x.date===a.date&&x.time===a.time&&x.status!=="Cancelled");if(clash)return $("aMsg").textContent="This doctor already has an appointment at the selected time.";if($("aEdit").value)data.appointments=data.appointments.map(x=>x.id===a.id?a:x);else data.appointments.push(a);save();$("appointmentForm").classList.add("hidden");renderAll()};
+window.editAppointment=x=>{let a=data.appointments.find(a=>a.id===x);$("appointmentForm").classList.remove("hidden");fillSelects();$("aEdit").value=a.id;$("aPatient").value=a.patient;$("aDoctor").value=a.doctor;$("aDate").value=a.date;$("aTime").value=a.time;$("aReason").value=a.reason;$("aStatus").value=a.status};
+$("addVisit").onclick=()=>{$("visitForm").classList.remove("hidden");$("visitFormEl").reset();$("vEdit").value="";$("vDate").value=today;fillSelects()};$("cancelVisit").onclick=()=>{$("visitForm").classList.add("hidden")};
+$("visitFormEl").onsubmit=e=>{e.preventDefault();let v={id:$("vEdit").value||id("V",data.visits),patient:$("vPatient").value,doctor:$("vDoctor").value,date:$("vDate").value,follow:$("vFollow").value,symptoms:$("vSymptoms").value,diagnosis:$("vDiagnosis").value,prescription:$("vPrescription").value};if(!v.patient||!v.doctor)return $("vMsg").textContent="Patient and doctor are required.";if($("vEdit").value)data.visits=data.visits.map(x=>x.id===v.id?v:x);else data.visits.push(v);save();$("visitForm").classList.add("hidden");renderAll()};
+window.editVisit=x=>{let v=data.visits.find(v=>v.id===x);$("visitForm").classList.remove("hidden");fillSelects();$("vEdit").value=v.id;$("vPatient").value=v.patient;$("vDoctor").value=v.doctor;$("vDate").value=v.date;$("vFollow").value=v.follow;$("vSymptoms").value=v.symptoms;$("vDiagnosis").value=v.diagnosis;$("vPrescription").value=v.prescription};
+window.removeItem=(type,x)=>{if(confirm("Are you sure you want to delete this record?")){data[type]=data[type].filter(r=>r.id!==x);save();renderAll()}};
+renderAll();
+</script>
+</body>
+</html>
